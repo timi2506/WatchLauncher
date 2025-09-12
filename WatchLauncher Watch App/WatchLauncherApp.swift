@@ -2,7 +2,7 @@
 //  WatchLauncherApp.swift
 //  WatchLauncher Watch App
 //
-//  Created by Tim Schuchardt on 11.09.25.
+//  Created by Tim on 07.09.25.
 //
 
 import SwiftUI
