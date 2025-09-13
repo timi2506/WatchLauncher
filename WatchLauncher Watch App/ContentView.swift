@@ -12,12 +12,14 @@ struct ContentView: View {
     @State var selectedTab = 0
     var body: some View {
         TabView(selection: $selectedTab) {
-            GoogleSearchView(onOpenSearchresult: { urlString in
+            GoogleSearchView { urlString in
                 openWebsite(url: urlString.toURL())
-            })
-            .tag(0)
+            }
+                .tag(0)
             BrowserView()
-            .tag(1)
+                .tag(1)
+            GeminiView()
+                .tag(2)
         }
         .tabViewStyle(.page)
     }

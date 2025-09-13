@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D3CF2CB2E733AFA009D7EF0 /* WatchLauncher Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8D3CF2CA2E733AFA009D7EF0 /* WatchLauncher Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8DC044242E74B52200DFD2A2 /* FaviconFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 8DC044232E74B52200DFD2A2 /* FaviconFinder */; };
+		8DC044432E7556DE00DFD2A2 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8DC044422E7556DE00DFD2A2 /* MarkdownUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC044242E74B52200DFD2A2 /* FaviconFinder in Frameworks */,
+				8DC044432E7556DE00DFD2A2 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +119,7 @@
 			name = "WatchLauncher Watch App";
 			packageProductDependencies = (
 				8DC044232E74B52200DFD2A2 /* FaviconFinder */,
+				8DC044422E7556DE00DFD2A2 /* MarkdownUI */,
 			);
 			productName = "WatchLauncher Watch App";
 			productReference = 8D3CF2CA2E733AFA009D7EF0 /* WatchLauncher Watch App.app */;
@@ -151,6 +154,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8DC044222E74B52200DFD2A2 /* XCRemoteSwiftPackageReference "FaviconFinder" */,
+				8DC044412E7556DE00DFD2A2 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D3CF2C52E733AFA009D7EF0 /* Products */;
@@ -464,6 +468,14 @@
 				minimumVersion = 5.1.4;
 			};
 		};
+		8DC044412E7556DE00DFD2A2 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -471,6 +483,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8DC044222E74B52200DFD2A2 /* XCRemoteSwiftPackageReference "FaviconFinder" */;
 			productName = FaviconFinder;
+		};
+		8DC044422E7556DE00DFD2A2 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8DC044412E7556DE00DFD2A2 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

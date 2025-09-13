@@ -14,14 +14,14 @@ struct SearchResultItem: Codable, Hashable {
 
 class SearchManager: ObservableObject {
     init() {
-        if let string = UserDefaults(suiteName: "group.timi2506.WatchFari")?.string(forKey: "searchKey") {
+        if let string = UserDefaults.standard.string(forKey: "searchKey") {
             self.apiKey = string
         }
     }
     static let shared = SearchManager()
     @Published var apiKey = "" {
         didSet {
-            UserDefaults(suiteName: "group.timi2506.WatchFari")?.set(apiKey, forKey: "searchKey")
+            UserDefaults.standard.set(apiKey, forKey: "searchKey")
         }
     }
     
