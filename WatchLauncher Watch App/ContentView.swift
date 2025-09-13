@@ -9,7 +9,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct ContentView: View {
-    @State var selectedTab = 0
+    @Binding var selectedTab: Int
     var body: some View {
         TabView(selection: $selectedTab) {
             GoogleSearchView { urlString in
@@ -34,10 +34,6 @@ struct ContentView: View {
         session?.prefersEphemeralWebBrowserSession = privateMode
         session?.start()
     }
-}
-
-#Preview {
-    ContentView()
 }
 
 extension View {

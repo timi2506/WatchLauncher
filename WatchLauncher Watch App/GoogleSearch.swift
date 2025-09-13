@@ -143,11 +143,16 @@ struct GoogleSearchView: View {
                                 onOpenSearchresult("https://developers.google.com/custom-search/v1/overview#api_key")
                             }
                             NavigationLink(destination: {
-                                Image("API-Key-QR")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .cornerRadius(5)
-                                    .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
+                                ScrollView {
+                                    Image("API-Key-QR")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .cornerRadius(5)
+                                        .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
+                                    Button("Drop to iPhone") {
+                                        DropManager.shared.send("https://github.com/timi2506/wsf-md-guides/blob/1fcab31cea13cb0d7156a50d013e46d4d265404b/README.md")
+                                    }
+                                }
                             }) {
                                 Label("On iPhone", systemImage: "iphone")
                             }

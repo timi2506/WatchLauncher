@@ -1,6 +1,15 @@
 {
-  "originHash" : "4e090cc01bf1c9ea1a1efbd298f0b18ff7c8cbdba6ea4d4f9fa081576449bac2",
+  "originHash" : "f2d4a15140e2b44b62906529f5b3a705c77c5743bbf80efe150f5f88d85c67d2",
   "pins" : [
+    {
+      "identity" : "drops",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/omaralbeik/Drops.git",
+      "state" : {
+        "revision" : "a183ee6f79f21c940092a19c2cba756555422371",
+        "version" : "1.7.0"
+      }
+    },
     {
       "identity" : "faviconfinder",
       "kind" : "remoteSourceControl",

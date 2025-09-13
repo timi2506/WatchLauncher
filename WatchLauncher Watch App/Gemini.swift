@@ -3,12 +3,11 @@ import Combine
 
 struct GeminiView: View {
     @StateObject var manager = GeminiManager.shared
-    @State var isResponding = false
     @State var error: String?
-@State var showKey = false
+    @State var showKey = false
     @AppStorage("GeminiKey") var apiKey: String = ""
     let watchScreen = WKInterfaceDevice.current().screenBounds
-@State var showKeyAlert = false
+    @State var showKeyAlert = false
     var body: some View {
         TabView {
             VStack {
@@ -21,7 +20,7 @@ struct GeminiView: View {
                             MessageBubble(message: msg)
                         }
                         Group {
-                            if isResponding {
+                            if manager.isResponding {
                                 HStack {
                                     ProgressView().controlSize(.small)
                                         .frame(width: 25)
@@ -33,15 +32,10 @@ struct GeminiView: View {
                                     Label("Message", systemImage: "paperplane")
                                 } onSubmit: { msg in
                                     Task {
-                                        isResponding = true
                                         do {
                                             try await manager.sendMessage(msg)
                                         } catch {
                                             self.error = error.localizedDescription
-                                        }
-                                        isResponding = false
-                                        withAnimation() {
-                                            proxy.scrollTo("Bottom")
                                         }
                                     }
                                 }
@@ -62,6 +56,16 @@ struct GeminiView: View {
                             }
                         }
                         .id("Bottom")
+                    }
+                    .onChange(of: manager.messages) {
+                        withAnimation() {
+                            proxy.scrollTo("Bottom")
+                        }
+                    }
+                    .onAppear {
+                        withAnimation() {
+                            proxy.scrollTo("Bottom")
+                        }
                     }
                 }
             }
@@ -92,11 +96,16 @@ struct GeminiView: View {
                                     Label("On Watch", systemImage: "applewatch")
                                 }
                                 NavigationLink(destination: {
-                                    Image("Gemini-API-Key-QR")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .cornerRadius(5)
-                                        .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
+                                    ScrollView {
+                                        Image("Gemini-API-Key-QR")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .cornerRadius(5)
+                                            .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
+                                        Button("Drop to iPhone") {
+                                            DropManager.shared.send("https://github.com/timi2506/wsf-md-guides/blob/1fcab31cea13cb0d7156a50d013e46d4d265404b/README.md")
+                                        }
+                                    }
                                 }) {
                                     Label("On iPhone", systemImage: "iphone")
                                 }
@@ -138,7 +147,7 @@ struct GeminiView: View {
 struct RestoreMessagesView: View {
     @StateObject var manager = BackupManager.shared
     @StateObject var geminiManager = GeminiManager.shared
-
+    
     @State var restoreBackup: Backup?
     var body: some View {
         List {
@@ -173,8 +182,8 @@ struct RestoreMessagesView: View {
             } message: {
                 Text("This will replace the current Messages with the Messages found in this Backup")
             }
-
-
+            
+            
         }
     }
 }
@@ -182,7 +191,7 @@ struct RestoreMessagesView: View {
 struct SaveMessagesView: View {
     @StateObject var manager = GeminiManager.shared
     @StateObject var backupsManager = BackupManager.shared
-
+    
     @Environment(\.dismiss) var dismiss
     @State var chatName = ""
     @State var includeDate = false
@@ -250,7 +259,7 @@ struct MessageBubble: View {
     }
 }
 
-struct Message: Codable, Identifiable {
+struct Message: Codable, Identifiable, Equatable {
     var id = UUID()
     var isUser: Bool
     var message: String
@@ -327,10 +336,17 @@ class GeminiManager: ObservableObject {
             self.messages = []
         }
     }
-    @Published var messages: [Message]
+    @Published var isResponding = false
+    @Published var messages: [Message] {
+        didSet {
+            save()
+        }
+    }
     @AppStorage("GeminiKey") var apiKey: String = ""
     func sendMessage(_ message: String) async throws {
         guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=\(apiKey)") else { throw URLError(.unknown) }
+        isResponding = true
+        defer { isResponding = false }
         messages.append(.init(isUser: true, message: message))
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -357,7 +373,7 @@ class GeminiManager: ObservableObject {
             }
             throw error
         }
-
+        
     }
     func save() {
         let encoder = JSONEncoder()
