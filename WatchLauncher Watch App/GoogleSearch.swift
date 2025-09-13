@@ -72,10 +72,10 @@ struct GoogleSearchView: View {
     var onOpenSearchresult: (String) -> Void
     let watchScreen = WKInterfaceDevice.current().screenBounds
     var body: some View {
-        VStack {
-            TextField("Search Text", text: $searchText)
-                .textFieldStyle(.plain)
-            HStack {
+        TabView {
+            VStack {
+                TextField("Search Text", text: $searchText)
+                    .padding(.vertical)
                 NavigationLink(destination: {
                     List {
                         Section("Search Results") {
@@ -111,10 +111,10 @@ struct GoogleSearchView: View {
                 }) {
                     Label("Search", systemImage: "magnifyingglass")
                 }
-                .disabled(searchText.isEmpty || searchManager.apiKey.isEmpty)
-                .buttonStyle(.borderedProminent)
+                .grayDisabled(searchText.isEmpty || searchManager.apiKey.isEmpty)
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.roundedRectangle(radius: 15))
                 .tint(.blue)
-                .labelStyle(.iconOnly)
                 .simultaneousGesture(
                     TapGesture()
                         .onEnded { _ in
@@ -123,54 +123,53 @@ struct GoogleSearchView: View {
                             }
                         }
                 )
-                
-                NavigationLink(destination: {
-                    Form {
-                        if showKey {
-                            TextField("API Key", text: $searchManager.apiKey)
-                        } else {
-                            SecureField("API Key", text: $searchManager.apiKey)
-                        }
-                        Toggle("Show API Key", isOn: $showKey)
-                        NavigationLink("Get Key") {
-                            List {
-                                Section {
-                                    Button("On Watch", systemImage: "applewatch") {
-                                        onOpenSearchresult("https://developers.google.com/custom-search/v1/overview#api_key")
-                                    }
-                                    NavigationLink(destination: {
-                                        Image("API-Key-QR")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .cornerRadius(5)
-                                            .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
-                                    }) {
-                                        Label("On iPhone", systemImage: "iphone")
-                                    }
-                                } footer: {
-                                    Text("Choose where to open the \"Get API Key\" Site")
-                                }
-                            }
-                        }
-                        
-                    }
-                    .navigationTitle("Search Settings")
-                }) {
-                    Label("Settings", systemImage: "gear")
+            }
+            .alert("API Key Required", isPresented: $showKeyAlert, actions: {
+                Button("OK") { showKeyAlert = false }
+            }, message: { Text("Please add one in Settings") })
+            .navigationTitle("Google")
+            .navigationBarTitleDisplayMode(.inline)
+            Form {
+                if showKey {
+                    TextField("API Key", text: $searchManager.apiKey)
+                } else {
+                    SecureField("API Key", text: $searchManager.apiKey)
                 }
-                .buttonStyle(.bordered)
-                .tint(.blue)
-                .labelStyle(.iconOnly)
+                Toggle("Show API Key", isOn: $showKey)
+                NavigationLink("Get Key") {
+                    List {
+                        Section {
+                            Button("On Watch", systemImage: "applewatch") {
+                                onOpenSearchresult("https://developers.google.com/custom-search/v1/overview#api_key")
+                            }
+                            NavigationLink(destination: {
+                                Image("API-Key-QR")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .cornerRadius(5)
+                                    .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
+                            }) {
+                                Label("On iPhone", systemImage: "iphone")
+                            }
+                        } footer: {
+                            Text("Choose where to open the \"Get API Key\" Site")
+                        }
+                    }
+                }
             }
         }
-        .alert("API Key Required", isPresented: $showKeyAlert, actions: {
-            Button("OK") { showKeyAlert = false }
-        }, message: { Text("Please add one in Settings") })
-        .navigationTitle("Google")
-        .navigationBarTitleDisplayMode(.inline)
+        .tabViewStyle(.verticalPage(transitionStyle: .identity))
         .navStacked()
         .tabItem {
             Label("Hello, world!", systemImage: "globe")
         }
+    }
+}
+
+extension View {
+    func grayDisabled(_ disabled: Bool) -> some View {
+        self
+            .disabled(disabled)
+            .opacity(disabled ? 0.5 : 1)
     }
 }

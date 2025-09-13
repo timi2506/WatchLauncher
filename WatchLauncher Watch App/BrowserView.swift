@@ -1,6 +1,7 @@
 import SwiftUI
 import AuthenticationServices
 import Combine
+import FaviconFinder
 
 struct BrowserView: View {
     @State var searchText: String = ""
@@ -8,89 +9,153 @@ struct BrowserView: View {
     @State var bookmarks = false
     @State var recommendations = false
     @AppStorage("privateMode") var privateMode = false
+    @AppStorage("useFavicons") var useFavicons = true
     @StateObject var manager = WebsitesManager.shared
     @Environment(\.dismiss) var dismiss
+    @State var bookmarkButtonDialog = false
+    @State var addWebsiteItem: String?
     var body: some View {
-        VStack {
-            Spacer()
-            TextField("URL or Bing Search", text: $searchText)
-                .padding(.top)
-            Spacer()
-            HStack {
-                OpenWebsiteButton(url: searchText.toURL(), label: {
-                    Label("Open Website", systemImage: "arrow.up.forward.app")
-                })
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderedProminent)
-                .tint(.blue)
-                .disabled(searchText.isEmpty || searchText.toURL() == nil)
-                Button("Bookmarks", systemImage: "bookmark") {
-                    bookmarks.toggle()
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderedProminent)
-                .tint(.orange)
-                Button("Recommendations", systemImage: "star") {
-                    recommendations.toggle()
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderedProminent)
-                .tint(.yellow)
-            }
-            Toggle("Private", systemImage: privateMode ? "eyeglasses" : "eyeglasses.slash", isOn: $privateMode)
-                .toggleStyle(.button)
-                .tint(.red)
-        }
-        .navigationTitle("Browser")
-        .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $addWebsiteSheet) {
-            AddWebsiteView()
-        }
-        .fullScreenCover(isPresented: $bookmarks) {
-            if manager.websites.isEmpty {
-                VStack {
-                    Text("No Saved Websites")
-                        .bold()
-                    Button("Save Website", systemImage: "plus") { addWebsiteSheet.toggle() }
-                }
-            } else {
-                List {
-                    ForEach(manager.websites) { website in
-                        OpenWebsiteButton(url: website.url) {
-                            HStack {
-                                Image(systemName: "safari")
-                                VStack(alignment: .leading) {
-                                    Text(website.name)
-                                        .lineLimit(1)
-                                    Text(website.url.noHTTPSstring)
-                                        .lineLimit(2)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
+        TabView {
+            VStack {
+                Spacer()
+                TextField("URL or Bing Search", text: $searchText)
+                    .padding(.top)
+                Spacer()
+                HStack {
+                    OpenWebsiteButton(url: searchText.toURL(), label: {
+                        Label("Open Website", systemImage: "arrow.up.forward.app")
+                    })
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.roundedRectangle(radius: 15))
+                    .tint(.blue)
+                    .grayDisabled(searchText.isEmpty || searchText.toURL() == nil)
+                    Button("Bookmarks", systemImage: "bookmark") {
+                        if (searchText.isEmpty || searchText.toURL() == nil) {
+                            bookmarks = true
+                        } else {
+                            bookmarkButtonDialog = true
+                        }
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.roundedRectangle(radius: 15))
+                    .tint(.orange)
+                    .confirmationDialog("Choose what to do", isPresented: $bookmarkButtonDialog) {
+                        Button("Add URL to Bookmarks") {
+                            bookmarkButtonDialog = false
+                            addWebsiteItem = searchText
+                            addWebsiteSheet = true
+                        }
+                        Button("Open Bookmarks") {
+                            bookmarkButtonDialog = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                bookmarks = true
                             }
                         }
                     }
-                    .onDelete { offsets in
-                        manager.websites.remove(atOffsets: offsets)
+                    Button("Recommendations", systemImage: "star") {
+                        recommendations.toggle()
                     }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.roundedRectangle(radius: 15))
+                    .tint(.yellow)
                 }
-                .listStyle(.carousel)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+                Toggle("Private", systemImage: privateMode ? "eyeglasses" : "eyeglasses.slash", isOn: $privateMode)
+                    .toggleStyle(.button)
+                    .buttonBorderShape(.roundedRectangle(radius: 15))
+                    .tint(.red)
+            }
+            .navigationTitle("Browser")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $addWebsiteSheet) {
+                AddWebsiteView(url: addWebsiteItem ?? "")
+            }
+            .fullScreenCover(isPresented: $bookmarks) {
+                if manager.websites.isEmpty {
+                    VStack {
+                        Text("No Saved Websites")
+                            .bold()
                         Button("Save Website", systemImage: "plus") { addWebsiteSheet.toggle() }
-                            .labelStyle(.iconOnly)
                     }
+                } else {
+                    List {
+                        ForEach(manager.websites) { website in
+                            BookmarkItemView(site: website)
+                        }
+                        .onDelete { offsets in
+                            manager.websites.remove(atOffsets: offsets)
+                        }
+                    }
+                    .listStyle(.carousel)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Save Website", systemImage: "plus") { addWebsiteSheet.toggle() }
+                                .labelStyle(.iconOnly)
+                        }
+                    }
+                    .navigationTitle("Saved")
                 }
-                .navigationTitle("Saved")
+            }
+            .fullScreenCover(isPresented: $recommendations) {
+                RecommendationsView()
+            }
+            .navStacked()
+            Form {
+                Section {
+                    Toggle("Use Favicons", isOn: $useFavicons)
+                } footer: {
+                    Text("Whether or not to download and show Favicons in the Bookmarks Manager")
+                }
             }
         }
-        .fullScreenCover(isPresented: $recommendations) {
-            RecommendationsView()
-        }
-        .navStacked()
+        .tabViewStyle(.verticalPage(transitionStyle: .identity))
         .tabItem {
             Label("Browser", systemImage: "safari")
         }
+    }
+}
+
+struct BookmarkItemView: View {
+    var site: SavedWebsite
+    @State var imageURL: URL?
+    var body: some View {
+        OpenWebsiteButton(url: site.url) {
+            HStack {
+                AsyncImage(url: imageURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 25, height: 25)
+                } placeholder: {
+                    Image(systemName: "safari")
+                }
+                
+                VStack(alignment: .leading) {
+                    Text(site.name)
+                        .lineLimit(1)
+                    Text(site.url.noHTTPSstring)
+                        .lineLimit(2)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .onAppear {
+            Task { imageURL = try? await tryFindingFavicon(site.url) }
+        }
+    }
+    @AppStorage("useFavicons") var useFavicons = true
+
+    func tryFindingFavicon(_ url: URL?) async throws -> URL {
+        guard useFavicons else { throw CancellationError() }
+        guard let url else { throw URLError(.cancelled) }
+        let favicon = try await FaviconFinder(url: url)
+            .fetchFaviconURLs()
+            .largest()
+        
+        return favicon.source
     }
 }
 
@@ -147,7 +212,7 @@ struct AddWebsiteView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Add", systemImage: "checkmark") { addWebsite() }
                     .labelStyle(.iconOnly)
-                    .disabled(name.isEmpty || url.isEmpty || url.toURL() == nil)
+                    .grayDisabled(name.isEmpty || url.isEmpty || url.toURL() == nil)
             }
         }
         .navStacked()
@@ -222,9 +287,11 @@ struct RecommendationsView: View {
         SavedWebsite(name: "Google", symbol: "magnifyingglass", url: "https://google.com/".toURL()!),
         SavedWebsite(name: "YouTube", symbol: "play.rectangle", url: "https://youtube.com/".toURL()!),
         SavedWebsite(name: "Wikipedia", symbol: "book.pages", url: "https://wikipedia.com/".toURL()!),
-        SavedWebsite(name: "ChatGPT", symbol: "brain", url: "https://chatgpt.com/".toURL()!)
-        
-        
+        SavedWebsite(name: "ChatGPT", symbol: "brain", url: "https://chatgpt.com/".toURL()!),
+        SavedWebsite(name: "Instagram", symbol: "camera", url: "https://instagram.com/".toURL()!),
+        SavedWebsite(name: "Twitter", symbol: "bird", url: "https://x.com/".toURL()!),
+        SavedWebsite(name: "Reddit", symbol: "text.bubble", url: "https://reddit.com/".toURL()!),
+        SavedWebsite(name: "TikTok", symbol: "rectangle.stack.badge.play", url: "https://tiktok.com/".toURL()!)
     ]
     var body: some View {
         List {

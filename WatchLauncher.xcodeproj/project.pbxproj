@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D3CF2CB2E733AFA009D7EF0 /* WatchLauncher Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8D3CF2CA2E733AFA009D7EF0 /* WatchLauncher Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8DC044242E74B52200DFD2A2 /* FaviconFinder in Frameworks */ = {isa = PBXBuildFile; productRef = 8DC044232E74B52200DFD2A2 /* FaviconFinder */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DC044242E74B52200DFD2A2 /* FaviconFinder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +116,7 @@
 			);
 			name = "WatchLauncher Watch App";
 			packageProductDependencies = (
+				8DC044232E74B52200DFD2A2 /* FaviconFinder */,
 			);
 			productName = "WatchLauncher Watch App";
 			productReference = 8D3CF2CA2E733AFA009D7EF0 /* WatchLauncher Watch App.app */;
@@ -146,6 +149,9 @@
 			);
 			mainGroup = 8D3CF2BD2E733AFA009D7EF0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8DC044222E74B52200DFD2A2 /* XCRemoteSwiftPackageReference "FaviconFinder" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D3CF2C52E733AFA009D7EF0 /* Products */;
 			projectDirPath = "";
@@ -448,6 +454,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8DC044222E74B52200DFD2A2 /* XCRemoteSwiftPackageReference "FaviconFinder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/will-lumley/FaviconFinder.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8DC044232E74B52200DFD2A2 /* FaviconFinder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8DC044222E74B52200DFD2A2 /* XCRemoteSwiftPackageReference "FaviconFinder" */;
+			productName = FaviconFinder;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D3CF2BE2E733AFA009D7EF0 /* Project object */;
 }
