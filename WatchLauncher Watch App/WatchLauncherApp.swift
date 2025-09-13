@@ -24,6 +24,7 @@ struct WatchLauncher_Watch_AppApp: App {
                         do {
                             if try !tryHandleDrop(msg) {
                                 dropItem = .init(message: msg)
+                                playNotificationSound()
                             }
                         } catch {
                             errorItem = error
@@ -132,10 +133,17 @@ struct WatchLauncher_Watch_AppApp: App {
             let apiKey = String(message.trimmingPrefix("watchLauncher-dropAction/googleKey://"))
             guard !apiKey.isEmpty else { throw errorHandlingInternalDropError }
             SearchManager.shared.apiKey = apiKey
+            playNotificationSound()
         } else if message.hasPrefix("watchLauncher-dropAction/geminiKey://") {
             let apiKey = String(message.trimmingPrefix("watchLauncher-dropAction/geminiKey://"))
             guard !apiKey.isEmpty else { throw errorHandlingInternalDropError }
             geminiKey = apiKey
+            playNotificationSound()
+        } else if message.hasPrefix("watchLauncher-dropAction/playDropSound://") {
+            let bool = String(message.trimmingPrefix("watchLauncher-dropAction/playDropSound://")).contains("true")
+            UserDefaults.standard.set(bool, forKey: "playDropSound")
+        } else if message == "watchLauncher-dropAction/requestAppInfo://" {
+            dropManager.send("watchLauncher-dropAction/appInfoResponse://\(String.appVersionString)")
         } else {
             return false
         }
@@ -148,3 +156,10 @@ struct DropItem: Identifiable {
     var message: String
 }
 
+extension String {
+    static var appVersionString: String {
+        let buildVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        return "\(buildVersion ?? "Unknown")\(buildNumber == nil ? "" : " (\(buildNumber!))")"
+    }
+}

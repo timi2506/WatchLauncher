@@ -6,12 +6,14 @@ import AVFoundation
 var audioPlayer: AVAudioPlayer?
 
 func playNotificationSound() {
-    if let url = Bundle.main.url(forResource: "drop", withExtension: "mp3") {
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("Error playing sound: \(error)")
+    if UserDefaults.standard.bool(forKey: "playDropSound") {
+        if let url = Bundle.main.url(forResource: "drop", withExtension: "mp3") {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.play()
+            } catch {
+                print("Error playing sound: \(error)")
+            }
         }
     }
 }
@@ -70,7 +72,6 @@ class DropManager: NSObject, ObservableObject, WCSessionDelegate {
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         if let msg = message["message"] as? String {
             DispatchQueue.main.async {
-                playNotificationSound()
                 self.onMessageReceive?(msg)
             }
         }
@@ -79,7 +80,6 @@ class DropManager: NSObject, ObservableObject, WCSessionDelegate {
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         if let msg = userInfo["message"] as? String {
             DispatchQueue.main.async {
-                playNotificationSound()
                 self.onMessageReceive?(msg)
             }
         }

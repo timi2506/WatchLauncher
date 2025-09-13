@@ -291,7 +291,9 @@ struct RecommendationsView: View {
         SavedWebsite(name: "Instagram", symbol: "camera", url: "https://instagram.com/".toURL()!),
         SavedWebsite(name: "Twitter", symbol: "bird", url: "https://x.com/".toURL()!),
         SavedWebsite(name: "Reddit", symbol: "text.bubble", url: "https://reddit.com/".toURL()!),
-        SavedWebsite(name: "TikTok", symbol: "rectangle.stack.badge.play", url: "https://tiktok.com/".toURL()!)
+        SavedWebsite(name: "TikTok", symbol: "rectangle.stack.badge.play", url: "https://tiktok.com/".toURL()!),
+        SavedWebsite(name: "Minecraft", symbol: "cube", url: "https://mcraft.fun/".toURL()!)
+
     ]
     var body: some View {
         List {
