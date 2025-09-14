@@ -111,9 +111,6 @@ struct BrowserView: View {
             }
         }
         .tabViewStyle(.verticalPage(transitionStyle: .identity))
-        .tabItem {
-            Label("Browser", systemImage: "safari")
-        }
     }
 }
 

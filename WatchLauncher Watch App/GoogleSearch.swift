@@ -150,7 +150,7 @@ struct GoogleSearchView: View {
                                         .cornerRadius(5)
                                         .frame(width: watchScreen.width - 25, height: watchScreen.height - 25)
                                     Button("Drop to iPhone") {
-                                        DropManager.shared.send("https://github.com/timi2506/wsf-md-guides/blob/1fcab31cea13cb0d7156a50d013e46d4d265404b/README.md")
+                                        DropManager.shared.send("https://developers.google.com/custom-search/v1/overview#api_key")
                                     }
                                 }
                             }) {
@@ -165,9 +165,6 @@ struct GoogleSearchView: View {
         }
         .tabViewStyle(.verticalPage(transitionStyle: .identity))
         .navStacked()
-        .tabItem {
-            Label("Hello, world!", systemImage: "globe")
-        }
     }
 }
 

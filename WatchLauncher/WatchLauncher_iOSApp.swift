@@ -9,6 +9,9 @@ import SwiftUI
 
 @main
 struct WatchLauncher_iOSApp: App {
+    init() {
+        _ = GlobalKeyboardAccessory.shared
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()

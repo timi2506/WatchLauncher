@@ -14,7 +14,13 @@ struct GeminiView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         if manager.messages.isEmpty {
-                            ContentUnavailableView("No Messages", systemImage: "bubble", description: Text("Try Sending one"))
+                            VStack {
+                                Text("No Messages")
+                                    .bold()
+                                Text("Try Sending one!")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding()
                         }
                         ForEach(manager.messages) { msg in
                             MessageBubble(message: msg)
@@ -24,7 +30,7 @@ struct GeminiView: View {
                                 HStack {
                                     ProgressView().controlSize(.small)
                                         .frame(width: 25)
-                                    Text("Responding")
+                                    Text("Generating")
                                         .font(.caption)
                                 }
                             } else {
@@ -50,6 +56,7 @@ struct GeminiView: View {
                                             }
                                         }
                                 )
+                                .padding(.top)
                                 .alert("API Key Required", isPresented: $showKeyAlert, actions: {
                                     Button("OK") { showKeyAlert = false }
                                 }, message: { Text("Please add one in Settings") })

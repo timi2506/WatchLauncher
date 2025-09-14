@@ -33,6 +33,7 @@ struct ContentView: View {
                                 Spacer()
                                 Button(action: {
                                     manager.send(message)
+                                    message = ""
                                 }) {
                                     Text("Send Drop")
                                         .bold()
@@ -63,6 +64,7 @@ struct ContentView: View {
                                         .bold()
                                     Button(action: {
                                         dropAction(.googleAPI, content: googleKey)
+                                        googleKey = ""
                                     }) {
                                         Text("Send Google API Key")
                                             .bold()
@@ -83,6 +85,7 @@ struct ContentView: View {
                                         .bold()
                                     Button(action: {
                                         dropAction(.geminiAPI, content: geminiKey)
+                                        geminiKey = ""
                                     }) {
                                         Text("Send Gemini API Key")
                                             .bold()
