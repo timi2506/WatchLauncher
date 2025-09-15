@@ -21,6 +21,9 @@
         }
       }
     },
+    "Activation State" : {
+
+    },
     "Cancel" : {
       "localizations" : {
         "de" : {
@@ -31,6 +34,15 @@
         }
       }
     },
+    "Content" : {
+
+    },
+    "Date %@" : {
+
+    },
+    "Drop Logs" : {
+
+    },
     "Drop Received" : {
       "localizations" : {
         "de" : {
@@ -40,6 +52,12 @@
           }
         }
       }
+    },
+    "Errors and Fallbacks" : {
+
+    },
+    "Errors: %@" : {
+
     },
     "Fetching" : {
       "localizations" : {
@@ -70,6 +88,19 @@
           }
         }
       }
+    },
+    "Log %@ at %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Log %1$@ at %2$@"
+          }
+        }
+      }
+    },
+    "Logs" : {
+
     },
     "Message" : {
       "localizations" : {
@@ -141,6 +172,9 @@
         }
       }
     },
+    "Used Fallback (User Info)" : {
+
+    },
     "Version" : {
       "localizations" : {
         "de" : {
@@ -151,6 +185,9 @@
         }
       }
     },
+    "Was Reachable" : {
+
+    },
     "WatchLauncher Drop" : {
       "localizations" : {
         "de" : {
@@ -160,6 +197,9 @@
           }
         }
       }
+    },
+    "WCSession Info" : {
+
     }
   },
   "version" : "1.1"

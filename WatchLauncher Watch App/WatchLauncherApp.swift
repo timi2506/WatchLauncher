@@ -25,12 +25,16 @@ struct WatchLauncher_Watch_AppApp: App {
                             if try !tryHandleDrop(msg) {
                                 dropItem = .init(message: msg)
                                 playNotificationSound()
+                                dropNotification(body: msg)
                             }
                         } catch {
                             errorItem = error
                             errorAlert = true
                         }
                         dropManager.send("watchLauncher-dropAction/messageReceived://")
+                    }
+                    Task {
+                        try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
                     }
                 }
                 .alert("Error", isPresented: $errorAlert, presenting: errorItem) { _ in
@@ -148,6 +152,15 @@ struct WatchLauncher_Watch_AppApp: App {
             return false
         }
         return true
+    }
+    func dropNotification(body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Drop Received"
+        content.body = body
+        let request = UNNotificationRequest(identifier: UUID().uuidString,
+                                            content: content,
+                                            trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 }
 

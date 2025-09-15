@@ -175,6 +175,18 @@ struct ContentView: View {
             Section("Universal Settings") {
                 Toggle("Play Drop Sound", isOn: $playDropSound)
             }
+            Section("Logs") {
+                NavigationLink(destination: {
+                    DropLogView()
+                }) {
+                    HStack {
+                        Text("Drop Logs")
+                        Spacer()
+                        Text(manager.logs.count, format: .number)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
         }
         .refreshable {
             requestAppInfo()
@@ -231,5 +243,68 @@ extension String {
         let buildVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         return "\(buildVersion ?? "Unknown")\(buildNumber == nil ? "" : " (\(buildNumber!))")"
+    }
+}
+
+struct DropLogView: View {
+    @StateObject var manager = DropManager.shared
+    @State var selectedLog: DropLog?
+    var body: some View {
+        List {
+            ForEach(manager.logs) { log in
+                HStack {
+                    Image(systemName: log.received ? "arrow.down.circle.fill" : "arrow.up.circle.fill")
+                        .foregroundStyle(log.received ? .red : .green)
+                    VStack(alignment: .leading) {
+                        Text("Log \(log.received ? "Received" : "Sent") at \(log.date, format: .dateTime)")
+                            .bold()
+                        Text(log.content)
+                            .lineLimit(1)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .contentShape(.rect)
+                .onTapGesture {
+                    selectedLog = log
+                }
+            }
+        }
+        .navigationTitle("Logs")
+        .sheet(item: $selectedLog) { log in
+            NavigationStack {
+                Form {
+                    Section("Date \(log.received ? "received" : "sent")") {
+                        Text(log.date, format: .dateTime)
+                    }
+                    Section("Content") {
+                        Text(log.content)
+                    }
+                    Section("WCSession Info") {
+                        HStack {
+                            Text("Was Reachable")
+                            Spacer()
+                            Text(log.wasReachable?.description ?? "NO VALUE")
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Text("Activation State")
+                            Spacer()
+                            Text(log.activationState?.text ?? "NO VALUE")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Section("Errors and Fallbacks") {
+                        HStack {
+                            Text("Used Fallback (User Info)")
+                            Spacer()
+                            Text(log.usedUserInfoInsteadOfSendMessage.description)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text("Errors: \(log.error?.localizedDescription ?? "-")")
+                    }
+                }
+                .navigationTitle("Log \(log.received ? "Received" : "Sent") at \(log.date, format: .dateTime)")
+            }
+        }
     }
 }
