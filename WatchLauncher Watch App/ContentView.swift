@@ -22,6 +22,16 @@ struct ContentView: View {
                 .tag(2)
         }
         .tabViewStyle(.page)
+        .onOpenURL { url in
+            if url.absoluteString.hasPrefix("watchLauncher-openTab://") {
+                switch url.absoluteString.trimmingPrefix("watchLauncher-openTab://") {
+                    case "0": selectedTab = 0
+                    case "1": selectedTab = 1
+                    case "2": selectedTab = 2
+                    default: break
+                }
+            }
+        }
     }
     @State var session: ASWebAuthenticationSession?
     @AppStorage("privateMode") var privateMode = false

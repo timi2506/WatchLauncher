@@ -16,7 +16,7 @@ struct BrowserView: View {
     @State var addWebsiteItem: String?
     var body: some View {
         TabView {
-            VStack {
+            ScrollView {
                 Spacer()
                 TextField("URL or Bing Search", text: $searchText)
                     .padding(.top)
